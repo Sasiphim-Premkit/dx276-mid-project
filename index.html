@@ -27,6 +27,7 @@
   --display:"Chonburi", "Mali", serif;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%;margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{
@@ -194,8 +195,56 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
 .modal.on{display:grid}
 .modal .card-stage{margin:0;width:min(340px,86vw)}
 .modal .close{display:block;margin:16px auto 0}
+/* ===== โหมดต่อสู้ ===== */
+.room-bar #battleBtn{background:#e74c3c;color:#fff}
+.hud{position:sticky;top:calc(env(safe-area-inset-top,0px) + 54px);z-index:890;max-width:1400px;margin:10px auto 0;padding:0 16px;
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hud .timer{font-family:var(--display);font-size:26px;background:#e74c3c;color:#fff;padding:2px 16px;border-radius:10px;box-shadow:0 4px 0 #8e2a20}
+.hud .timer.low{animation:hop .5s ease-in-out infinite}
+.hud .tops{display:flex;gap:6px;flex-wrap:wrap}
+.hud .tops span{background:var(--paper);padding:3px 10px;border-radius:999px;font-size:14px;font-weight:700}
+.hud .rule{color:var(--paper);font-size:14px;opacity:.85}
+.av.foe .nm span{background:#ffd3cb}
+.av.busy .head{box-shadow:0 0 0 3px #e74c3c,0 0 16px #e74c3c}
+.av.busy::after{content:"⚔️";position:absolute;left:0;right:0;top:-24px;text-align:center;font-size:20px;animation:hop .4s ease-in-out infinite}
+.av.dead .head,.av.dead .fig{filter:grayscale(1);opacity:.45}
+.av.dead::after{content:"👻";position:absolute;left:0;right:0;top:-10px;text-align:center;font-size:28px;animation:hop 1s ease-in-out infinite}
+.av.spawn .head,.av.spawn .fig{animation:spawn .5s ease-out}
+@keyframes spawn{from{transform:scale(0)}70%{transform:scale(1.25)}}
+.duel{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:950;
+  width:min(440px,94vw);background:var(--paper);border-radius:var(--radius-l);padding:18px 18px 16px;
+  box-shadow:0 0 0 3px var(--ink),8px 8px 0 var(--ink);text-align:center}
+.duel .vs{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+.duel .vs .p{width:110px}
+.duel .vs .dface{width:54px;height:54px;border-radius:50%;margin:0 auto;overflow:hidden;background:#efe5d1;display:grid;place-items:center;font-size:26px;
+  border:3px solid #fff;box-shadow:0 0 0 2px var(--stitch)}
+.duel .vs .dface img{width:100%;height:100%;object-fit:cover}
+.duel .vs small{display:block;font-size:12px;line-height:1.25;color:#8a7358}
+.duel .vs b{display:block;font-size:14px;line-height:1.25}
+.duel .vs .x{font-family:var(--display);font-size:24px;color:#e74c3c}
+.duel .msg{font-weight:700;margin:4px 0 10px;min-height:24px}
+.duel .picks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.duel .picks button{border:2px solid var(--ink);background:#fff;border-radius:12px;padding:10px 4px;font-weight:700;box-shadow:0 4px 0 var(--ink)}
+.duel .picks button span{display:block;font-size:34px;line-height:1.2}
+.duel .picks button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.duel .bar{height:8px;border-radius:4px;background:#eadfca;overflow:hidden;margin-top:12px}
+.duel .bar i{display:block;height:100%;background:#e74c3c;width:100%}
+.duel .reveal{font-size:54px;letter-spacing:10px;margin:4px 0}
+.duel .big{font-family:var(--display);font-size:24px}
+.duel .rules{font-size:12px;color:#8a7358;margin-top:10px}
+.end{margin:0;max-height:88vh;overflow:auto;width:min(520px,92vw)}
+.end .crown{font-size:56px;text-align:center;line-height:1}
+.end .winner{text-align:center;margin-bottom:14px}
+.end .winner .em{font-size:48px}
+.rank{display:grid;grid-template-columns:32px 40px 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #d8c7a6;font-size:15px}
+.rank .em{font-size:26px;text-align:center}
+.rank .no{font-weight:700;text-align:center}
+.rank .bar{height:8px;border-radius:4px;background:#eadfca;overflow:hidden;margin-top:2px}
+.rank .bar i{display:block;height:100%;background:var(--c)}
+.rank .pts{font-weight:700;font-size:17px}
+.mvp{margin-top:14px;background:var(--washi-yellow);border-radius:10px;padding:8px 12px;font-weight:700;text-align:center}
 @media (prefers-reduced-motion:reduce){
-  .card{transition:none}.av .tool,.av .bubble,.av.walk .fig,.av.walk .legs i,.av.me::before,.mark{animation:none!important}
+  .card{transition:none}.av .tool,.av .bubble,.av.walk .fig,.av.walk .legs i,.av.me::before,.mark,.av.busy::after,.av.dead::after,.av.spawn .head,.av.spawn .fig,.hud .timer{animation:none!important}
 }
 </style>
 </head>
@@ -207,13 +256,14 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
     <div class="tape l"></div><div class="tape r"></div>
     <div class="hero-props" aria-hidden="true">✂️🧶🔥✨</div>
     <h1>คุณเป็นช่างคราฟต์สายไหน</h1>
-    <p>ตอบคำถาม 10 ข้อ เข้าห้องคราฟต์ไปดูว่าเพื่อนกำลังทำอะไรกันอยู่</p>
+    <p>ตอบคำถาม 10 ข้อ รับการ์ดตัวละคร แล้วเข้าห้องคราฟต์ไปดูว่าเพื่อน ๆ กำลังทำอะไรพัง ๆ น่ารัก ๆ กันอยู่</p>
     <label for="roomCode">รหัสห้อง</label>
     <input id="roomCode" type="text" maxlength="24" autocomplete="off">
     <p class="muted" style="font-size:14px;margin-top:6px">ทุกคนที่ใส่รหัสเดียวกันจะอยู่ห้องเดียวกัน</p>
     <div class="row">
       <button class="btn" id="startBtn">เริ่มทำแบบทดสอบ</button>
       <button class="btn ghost" id="resumeBtn" hidden>กลับเข้าห้องเดิม</button>
+      <button class="btn ghost" id="watchBtn" hidden>เข้าดูแบบผู้จัด (ไม่ร่วมเล่น)</button>
     </div>
   </div>
 </section>
@@ -265,6 +315,8 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
     <span class="pill" id="countPill"></span>
     <button id="myCardBtn">การ์ดของฉัน</button>
     <button id="shareBtn">คัดลอกลิงก์ห้อง</button>
+    <button id="battleBtn" hidden>⚔️ เริ่มสู้ 3 นาที</button>
+    <button id="scoreBtn" hidden>คะแนนทีม</button>
     <button id="resetBtn" hidden>ล้างห้อง</button>
   </div>
   <div class="hint">
@@ -272,9 +324,12 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
     <span class="how">แตะพื้นเพื่อพาตัวเองเดิน · แตะเพื่อนเพื่อดูการ์ด</span>
     <span class="feed" id="feed"></span>
   </div>
+  <div class="hud" id="hud" hidden><span class="timer" id="timer">3:00</span><span class="tops" id="hudTops"></span><span class="rule">แตะเพื่อนต่างสายเพื่อท้าสู้ · แพ้แล้วเกิดใหม่ใน 5 วิ</span></div>
   <div class="floor" id="floor"></div>
 </section>
 
+<div class="duel" id="duel" hidden role="dialog" aria-live="polite"></div>
+<div class="modal" id="endModal" role="dialog" aria-modal="true"><div class="sheet end" id="endBody"></div></div>
 <div class="modal" id="modal" role="dialog" aria-modal="true">
   <div>
     <div class="card-stage"><div class="card flipped" id="modalCard"></div></div>
@@ -286,8 +341,8 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
 /* ================== ตั้งค่า ==================
    ใส่ค่าจาก Supabase > Project Settings > API
    ถ้าเว้นว่าง เกมจะเปิดในโหมดทดลอง (มีเพื่อนจำลอง ไม่เรียลไทม์) */
-const SUPABASE_URL = "https://hdtcuvucckxehqkmspwl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkdGN1dnVjY2t4ZWhxa21zcHdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1OTYwNTMsImV4cCI6MjEwNjE3MjA1M30.j4hg6XwoW0Y6ammfCG6eMxBOqf4G6IiBtjMi6wpryiE";
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";
 const DEFAULT_ROOM = "craft";
 
 /* ================== ตัวละคร ================== */
@@ -451,6 +506,12 @@ $("#startBtn").onclick = () => {
   qIndex = 0; scores = {}; renderQuestion(); show("quiz");
 };
 $("#resumeBtn").onclick = () => { me = saved; enterRoom(); };
+$("#watchBtn").hidden = !IS_HOST;
+$("#watchBtn").onclick = () => {
+  room = ($("#roomCode").value.trim() || DEFAULT_ROOM).slice(0,24);
+  me = { id:"host-"+uuid(), room, name:"ผู้จัด", spectator:true };
+  enterRoom();
+};
 
 /* ================== แบบทดสอบ ================== */
 function renderQuestion(){
@@ -543,12 +604,14 @@ async function enterRoom(){
   $("#demoNote").hidden = !DEMO;
   show("room");
   layoutFloor();
-  players = new Map([[me.id, me]]);
+  $("#myCardBtn").hidden = !!me.spectator;
+  $("#battleBtn").hidden = !IS_AUTH;
+  players = new Map(me.spectator ? [] : [[me.id, me]]);
   if (DEMO){ seedDemo(); render(); return; }
 
   const { data, error } = await sb.from("players").select("*").eq("room", room).order("created_at");
   if (!error) data.forEach(p=>players.set(p.id,p));
-  if (!players.has(me.id)) { await sb.from("players").upsert(me); players.set(me.id, me); }
+  if (!me.spectator && !players.has(me.id)) { await sb.from("players").upsert(me); players.set(me.id, me); }
   render();
 
   if (channel) sb.removeChannel(channel);
@@ -567,6 +630,7 @@ async function enterRoom(){
       const a = walkers.get(payload.id); if (!a) return;
       a.tx = clamp(payload.x,.02,.98); a.ty = clamp(payload.y,.04,.97); a.visit = null; a.manualUntil = Date.now()+15000;
     })
+    .on("broadcast",{event:"bt"}, ({payload})=>onBattleMsg(payload))
     .on("presence",{event:"sync"},()=>{ online = new Set(Object.keys(channel.presenceState())); render(); })
     .subscribe(async status=>{ if (status==="SUBSCRIBED") await channel.track({ t:Date.now() }); });
 }
@@ -620,7 +684,7 @@ function render(fromDoor){
       const [sx,sy] = fromDoor ? [0.5, 0.97] : randomSpot(p.character);
       a = { x:sx, y:sy, tx:sx, ty:sy, wait:Math.random()*3, visit:null, manualUntil:0, left:false, el:document.createElement("button") };
       a.el.className = "av";
-      a.el.onclick = e => { e.stopPropagation(); openCard(p.id); };
+      a.el.onclick = e => { e.stopPropagation(); onAvatarTap(p.id); };
       floor.appendChild(a.el);
       walkers.set(p.id, a);
       if (fromDoor) { const [x,y] = randomSpot(p.character); a.tx=x; a.ty=y; a.wait=0; }
@@ -681,7 +745,19 @@ let last = performance.now();
 function tick(now){
   const dt = Math.min(0.05, (now-last)/1000); last = now;
   if ($("#room").classList.contains("on") && W){
+    const nowMs = Date.now();
     for (const [id,a] of walkers){
+      const isDead = battle.dead[id] > nowMs;
+      if (a.wasDead && !isDead){
+        const [x,y] = randomSpot(a.character); a.x = a.tx = x; a.y = a.ty = y;
+        a.el.classList.remove("spawn"); void a.el.offsetWidth; a.el.classList.add("spawn");
+        say(a, "เกิดใหม่แล้ว! 💪");
+      }
+      a.wasDead = isDead;
+      if (isDead){ a.tx = a.x; a.ty = a.y; a.wait = 1; }
+      a.el.classList.toggle("dead", isDead);
+      a.el.classList.toggle("busy", !isDead && battle.busy[id] > nowMs);
+      a.el.classList.toggle("foe", battle.active && !me.spectator && id!==me.id && a.character!==(players.get(me.id)||{}).character);
       const dx = (a.tx-a.x)*W, dy = (a.ty-a.y)*H, dist = Math.hypot(dx,dy);
       if (dist > 2){
         const speed = id===me.id && a.manualUntil>Date.now() ? 150 : 60;
@@ -739,6 +815,287 @@ setInterval(()=>{
 
 let feedTimer;
 function feed(text){ $("#feed").innerHTML = `<span>${esc(text)}</span>`; clearTimeout(feedTimer); feedTimer = setTimeout(()=>$("#feed").innerHTML="",5000); }
+
+/* ================== โหมดต่อสู้: เป่ายิงฉุบ กรรไกร ค้อน กระดาษ ================== */
+const PICKS = {
+  scissors:{e:"✂️",n:"กรรไกร",beats:"paper"},
+  hammer:{e:"🔨",n:"ค้อน",beats:"scissors"},
+  paper:{e:"📄",n:"กระดาษ",beats:"hammer"}
+};
+const BATTLE_MS = 180000, PICK_MS = 8000, RESPAWN_MS = 5000;
+const IS_AUTH = IS_HOST || DEMO;          // ผู้จัดเป็นคนจับเวลาและเก็บคะแนนกลาง
+let battle = { active:false, ended:false, endsAt:0, scores:{}, kills:{}, dead:{}, busy:{}, seen:new Set() };
+let duel = null, lastState = 0;
+const isBot = id => String(id).startsWith("demo-");
+const randPick = () => ["scissors","hammer","paper"][Math.floor(Math.random()*3)];
+
+function send(type, data){
+  const payload = { type, ...data };
+  if (DEMO){ demoRoute(payload); return; }
+  if (channel) channel.send({ type:"broadcast", event:"bt", payload });
+}
+function onBattleMsg(m){
+  if (m.type==="start") beginBattle(m.duration, false);
+  else if (m.type==="state"){
+    if (!battle.active && !battle.ended && m.remaining>0) beginBattle(m.remaining, true);
+    if (battle.active){ battle.endsAt = Date.now()+m.remaining; battle.scores = m.scores||{}; battle.kills = m.kills||{}; updateHud(); }
+  }
+  else if (m.type==="end"){ battle.scores = m.scores||{}; battle.kills = m.kills||{}; battle.ended ? showScoreboard(true) : finishBattle(); }
+  else if (m.type==="challenge") onChallenge(m);
+  else if (m.type==="pick") onPick(m);
+  else if (m.type==="tie") onTie(m);
+  else if (m.type==="decline") onDecline(m);
+  else if (m.type==="result") applyResult(m);
+}
+
+/* ---------- เริ่ม/จบรอบ ---------- */
+function beginBattle(ms, keep){
+  battle.active = true; battle.ended = false; battle.endsAt = Date.now()+ms;
+  if (!keep){ battle.scores = {}; battle.kills = {}; battle.dead = {}; battle.busy = {}; }
+  $("#hud").hidden = false; $("#battleBtn").hidden = true; $("#scoreBtn").hidden = false;
+  $("#endModal").classList.remove("on");
+  feed("⚔️ เริ่มสู้แล้ว! แตะเพื่อนต่างสายเพื่อท้าเป่ายิงฉุบ");
+  updateHud();
+}
+function finishBattle(){
+  if (battle.ended) return;
+  battle.active = false; battle.ended = true;
+  closeDuel();
+  $("#hud").hidden = true; $("#battleBtn").hidden = !IS_AUTH;
+  battle.dead = {}; battle.busy = {};
+  showScoreboard(true);
+}
+$("#battleBtn").onclick = () => {
+  if (!confirm("เริ่มสู้ 3 นาทีเลยไหม ทุกคนในห้องจะเริ่มพร้อมกัน")) return;
+  beginBattle(BATTLE_MS, false);
+  send("start", { duration:BATTLE_MS });
+};
+$("#scoreBtn").onclick = () => showScoreboard(battle.ended && !battle.active);
+
+/* ---------- ท้าสู้ ---------- */
+function onAvatarTap(id){
+  if (!battle.active || me.spectator || id===me.id) return openCard(id);
+  const now = Date.now(), t = players.get(id);
+  if (!t) return;
+  if (battle.dead[me.id] > now) return feed("คุณยังไม่เกิดใหม่ รออีกแป๊บ 👻");
+  if (duel) return feed("กำลังสู้อยู่ ขอจบศึกนี้ก่อน");
+  if (t.character===me.character) return feed(`${t.name} สายเดียวกัน ห้ามตีกันเอง`);
+  if (battle.dead[id] > now) return feed(`${t.name} ยังเป็นผีอยู่ รอเขาเกิดใหม่ก่อน`);
+  if (battle.busy[id] > now) return feed(`${t.name} กำลังสู้กับคนอื่นอยู่`);
+  if (!DEMO && !online.has(id)) return feed(`${t.name} ออกจากห้องไปแล้ว`);
+  const m = { duelId: me.id+"-"+now, from:me.id, to:id };
+  duel = { id:m.duelId, opp:id, role:"A", myPick:null, oppPick:null, deadline:now+PICK_MS, round:1 };
+  markDuelStart(m);
+  send("challenge", m);
+  renderDuel();
+}
+function markDuelStart(m){
+  const now = Date.now();
+  battle.busy[m.from] = battle.busy[m.to] = now + 30000;
+  const a = walkers.get(m.from), b = walkers.get(m.to);
+  if (a && b){
+    a.tx = clamp(b.x + (a.x<b.x?-1:1)*64/W, .02,.98); a.ty = b.y; a.visit = null; a.manualUntil = now+25000;
+    b.tx = b.x; b.ty = b.y; b.visit = null; b.manualUntil = now+25000;
+    say(a, "ท้าสู้! ⚔️");
+  }
+}
+function releaseDuelists(a, b){
+  delete battle.busy[a]; delete battle.busy[b];
+  [a,b].forEach(id=>{ const w = walkers.get(id); if (w) w.manualUntil = 0; });
+}
+function onChallenge(m){
+  markDuelStart(m);
+  if (m.to !== me.id) return;
+  const now = Date.now();
+  if (duel || battle.dead[me.id] > now || !battle.active){
+    send("decline", { duelId:m.duelId, from:m.from, to:me.id }); return;
+  }
+  duel = { id:m.duelId, opp:m.from, role:"B", myPick:null, oppPick:null, deadline:now+PICK_MS, round:1 };
+  renderDuel();
+}
+function onDecline(m){
+  releaseDuelists(m.from, m.to);
+  if (duel && duel.id===m.duelId){ const o = players.get(duel.opp); closeDuel(); feed(`${o?o.name:"เขา"} ไม่ว่างสู้ตอนนี้`); }
+}
+function choose(c){
+  if (!duel || duel.myPick || duel.outcome) return;
+  duel.myPick = c;
+  send("pick", { duelId:duel.id, id:me.id, choice:c, round:duel.round });
+  renderDuel(); tryResolve(false);
+}
+function onPick(m){
+  if (!duel || m.duelId!==duel.id || m.id!==duel.opp || m.round!==duel.round) return;
+  duel.oppPick = m.choice; renderDuel(); tryResolve(false);
+}
+const isArbiter = () => duel && (duel.role==="A" || (DEMO && isBot(duel.opp)));
+function tryResolve(force){
+  if (!duel || duel.outcome || !isArbiter()) return;
+  if (!force && !(duel.myPick && duel.oppPick)) return;
+  const a = me.id, b = duel.opp, pa = duel.myPick, pb = duel.oppPick;
+  if (!pa && !pb){ const r = { duelId:duel.id, a, b, cancel:true }; send("result", r); applyResult(r); return; }
+  if (pa && pb && pa===pb){
+    duel.round++;
+    send("tie", { duelId:duel.id, round:duel.round, pick:pa, a, b });
+    tieLocal(pa); return;
+  }
+  const winner = !pb ? a : !pa ? b : (PICKS[pa].beats===pb ? a : b);
+  const loser = winner===a ? b : a;
+  const r = { duelId:duel.id, a, b, pa, pb, winner, loser, team:(players.get(winner)||{}).character };
+  send("result", r); applyResult(r);
+}
+function onTie(m){
+  battle.busy[m.a] = battle.busy[m.b] = Date.now()+30000;
+  if (duel && duel.id===m.duelId){ duel.round = m.round; tieLocal(m.pick); }
+}
+function tieLocal(pick){
+  duel.tie = `เสมอ! ทั้งคู่ออก ${PICKS[pick].e} ${PICKS[pick].n} เลือกใหม่`;
+  duel.myPick = null; duel.oppPick = null; duel.deadline = Date.now()+PICK_MS;
+  renderDuel();
+  if (DEMO && isBot(duel.opp)) demoBotPick(duel.id, duel.opp, duel.round);
+}
+function applyResult(r){
+  if (battle.seen.has(r.duelId)) return;
+  battle.seen.add(r.duelId);
+  releaseDuelists(r.a, r.b);
+  if (r.cancel){ if (duel && duel.id===r.duelId){ closeDuel(); feed("ไม่มีใครออกมือ ศึกนี้ยกเลิก"); } return; }
+  if (!battle.active){ if (duel && duel.id===r.duelId) closeDuel(); return; }
+  if (battle.active && r.team){
+    battle.scores[r.team] = (battle.scores[r.team]||0) + 1;
+    battle.kills[r.winner] = (battle.kills[r.winner]||0) + 1;
+  }
+  battle.dead[r.loser] = Date.now() + RESPAWN_MS;
+  const w = players.get(r.winner), l = players.get(r.loser);
+  const wp = r.winner===r.a ? r.pa : r.pb, lp = r.loser===r.a ? r.pa : r.pb;
+  const ww = walkers.get(r.winner), lw = walkers.get(r.loser);
+  if (ww) say(ww, `${PICKS[wp].e} ชนะ! +1`);
+  if (lw) say(lw, lp ? `${PICKS[lp].e} อ๊ากกก` : "ลืมออกมือ 😵");
+  if (w && l) feed(`${w.name} ${PICKS[wp].e} ชนะ ${l.name} ${lp?PICKS[lp].e:"(ไม่ออกมือ)"} · +1 ${CHARS[r.team].name}`);
+  if (duel && duel.id===r.duelId){
+    duel.outcome = r; renderDuel();
+    const id = duel.id; setTimeout(()=>{ if (duel && duel.id===id) closeDuel(); }, 2600);
+  }
+  updateHud();
+}
+
+/* ---------- หน้าต่างต่อสู้ ---------- */
+function faceHTML(p){ return p && p.photo ? `<img src="${p.photo}" alt="">` : (p ? CHARS[p.character].emoji : "❔"); }
+function renderDuel(){
+  if (!duel){ $("#duel").hidden = true; return; }
+  const o = players.get(duel.opp) || { name:"?", character:"glue" }, mine = players.get(me.id);
+  let body = "";
+  if (duel.outcome){
+    const r = duel.outcome, myP = r.a===me.id ? r.pa : r.pb, opP = r.a===me.id ? r.pb : r.pa, win = r.winner===me.id;
+    body = `<div class="reveal">${myP?PICKS[myP].e:"⌛"}<span style="font-size:22px;letter-spacing:0;margin:0 6px">vs</span>${opP?PICKS[opP].e:"⌛"}</div>
+      <div class="big">${win ? "ชนะ! 🎉" : "แพ้… 👻"}</div>
+      <div class="msg">${win ? `+1 คะแนนให้ทีม${CHARS[mine.character].name}` : `เกิดใหม่ใน ${RESPAWN_MS/1000} วินาที`}${!opP&&win?" (อีกฝ่ายไม่ออกมือ)":""}${!myP&&!win?" (คุณไม่ได้ออกมือ)":""}</div>`;
+  } else if (duel.myPick){
+    body = `<div class="msg">${duel.tie?esc(duel.tie)+"<br>":""}คุณออก ${PICKS[duel.myPick].e} ${PICKS[duel.myPick].n} · รอ ${esc(o.name)} ตัดสินใจ…</div>
+      <div class="bar"><i id="duelBar"></i></div>`;
+  } else {
+    body = `<div class="msg">${duel.tie?esc(duel.tie):(duel.role==="A"?"เลือกอาวุธเลย!":`${esc(o.name)} ท้าสู้คุณ! เลือกอาวุธเลย`)}</div>
+      <div class="picks">${Object.entries(PICKS).map(([k,v])=>`<button data-pick="${k}"><span>${v.e}</span>${v.n}</button>`).join("")}</div>
+      <div class="bar"><i id="duelBar"></i></div>
+      <div class="rules">🔨 ค้อนทุบกรรไกร · ✂️ กรรไกรตัดกระดาษ · 📄 กระดาษห่อค้อน</div>`;
+  }
+  $("#duel").innerHTML = `<div class="vs">
+      <div class="p"><div class="dface">${faceHTML(mine)}</div><b>คุณ</b><small>${CHARS[mine.character].name}</small></div>
+      <div class="x">VS</div>
+      <div class="p"><div class="dface">${faceHTML(o)}</div><b>${esc(o.name)}</b><small>${CHARS[o.character].name}</small></div>
+    </div>${body}`;
+  $("#duel").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>choose(b.dataset.pick));
+  $("#duel").hidden = false;
+}
+function closeDuel(){ duel = null; $("#duel").hidden = true; }
+
+/* ---------- คะแนน ---------- */
+function teamRows(){
+  const teams = new Set([...players.values()].map(p=>p.character));
+  Object.keys(battle.scores).forEach(k=>teams.add(k));
+  return [...teams].filter(k=>CHARS[k]).map(k=>({ k, pts:battle.scores[k]||0,
+    size:[...players.values()].filter(p=>p.character===k).length })).sort((a,b)=>b.pts-a.pts || a.size-b.size);
+}
+function updateHud(){
+  if (!battle.active) return;
+  const left = Math.max(0, battle.endsAt - Date.now()), s = Math.ceil(left/1000);
+  const t = $("#timer"); t.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  t.classList.toggle("low", s<=15);
+  $("#hudTops").innerHTML = teamRows().slice(0,3).map((r,i)=>`<span>${["🥇","🥈","🥉"][i]} ${CHARS[r.k].emoji} ${r.pts}</span>`).join("");
+}
+function showScoreboard(final){
+  const rows = teamRows(), max = Math.max(1, ...rows.map(r=>r.pts));
+  const top = rows.length ? rows[0].pts : 0, winners = rows.filter(r=>r.pts===top && top>0);
+  let mvpId = null, mvpN = 0;
+  for (const [id,n] of Object.entries(battle.kills)) if (n>mvpN && players.has(id)){ mvpId = id; mvpN = n; }
+  let head = `<h2 style="text-align:center">คะแนนระหว่างสู้</h2>`;
+  if (final){
+    head = winners.length
+      ? `<div class="crown">👑</div><div class="winner"><p class="muted" style="margin:0">สุดยอดสายงานคราฟต์ประจำห้องคือ</p>
+         ${winners.map(w=>`<div class="em">${CHARS[w.k].emoji}</div><h2 style="margin:0">${CHARS[w.k].name}</h2>`).join("")}
+         <p class="muted">${top} ชัยชนะ${winners.length>1?" · เสมอกัน!":""}</p></div>`
+      : `<h2 style="text-align:center">หมดเวลา! ยังไม่มีใครชนะเลย</h2>`;
+  }
+  $("#endBody").innerHTML = `<div class="tape l"></div><div class="tape r"></div>${head}
+    ${rows.map((r,i)=>`<div class="rank" style="--c:${CHARS[r.k].c}"><span class="no">${i+1}</span><span class="em">${CHARS[r.k].emoji}</span>
+      <span>${CHARS[r.k].name} <small class="muted">(${r.size} คน)</small><span class="bar"><i style="width:${r.pts/max*100}%"></i></span></span>
+      <span class="pts">${r.pts}</span></div>`).join("")}
+    ${mvpId?`<div class="mvp">⭐ MVP: ${esc(players.get(mvpId).name)} ชนะไป ${mvpN} ครั้ง</div>`:""}
+    <div style="text-align:center;margin-top:16px"><button class="btn" id="endClose">ปิด</button></div>`;
+  $("#endClose").onclick = () => $("#endModal").classList.remove("on");
+  $("#endModal").classList.add("on");
+}
+$("#endModal").onclick = e => { if (e.target.id==="endModal") $("#endModal").classList.remove("on"); };
+
+/* ---------- นาฬิกาของเกม ---------- */
+setInterval(()=>{
+  const now = Date.now();
+  if (battle.active){
+    updateHud();
+    if (!DEMO && IS_HOST && now-lastState > 4000){
+      lastState = now;
+      send("state", { remaining:battle.endsAt-now, scores:battle.scores, kills:battle.kills });
+    }
+    if (now >= battle.endsAt){
+      if (IS_AUTH) send("end", { scores:battle.scores, kills:battle.kills });
+      finishBattle();
+    }
+  }
+  if (duel && !duel.outcome){
+    const bar = $("#duelBar");
+    if (bar) bar.style.width = Math.max(0,(duel.deadline-now)/PICK_MS*100)+"%";
+    if (isArbiter() && now > duel.deadline+600) tryResolve(true);
+    else if (!isArbiter() && now > duel.deadline+7000){ const d = duel; releaseDuelists(me.id, d.opp); closeDuel(); feed("การต่อสู้ถูกยกเลิก"); }
+  }
+}, 200);
+
+/* ---------- โหมดทดลอง: บอทสู้กันเอง ---------- */
+function demoRoute(m){
+  if (m.type==="challenge" && isBot(m.to)) demoBotPick(m.duelId, m.to, 1);
+}
+function demoBotPick(duelId, botId, round){
+  setTimeout(()=>{ if (Math.random()<0.07) return; onPick({ duelId, id:botId, choice:randPick(), round }); }, 900+Math.random()*2200);
+}
+setInterval(()=>{
+  if (!DEMO || !battle.active) return;
+  const now = Date.now();
+  const free = [...players.values()].filter(p=>isBot(p.id) && !(battle.dead[p.id]>now) && !(battle.busy[p.id]>now));
+  if (free.length < 1) return;
+  const meFree = !me.spectator && !duel && !(battle.dead[me.id]>now);
+  const bot = free[Math.floor(Math.random()*free.length)];
+  if (meFree && bot.character!==me.character && Math.random()<0.22){
+    const m = { duelId:bot.id+"-"+now, from:bot.id, to:me.id };
+    onChallenge(m); demoBotPick(m.duelId, bot.id, 1); return;
+  }
+  const foes = free.filter(p=>p.character!==bot.character);
+  if (!foes.length) return;
+  const foe = foes[Math.floor(Math.random()*foes.length)];
+  const m = { duelId:bot.id+"-"+now, from:bot.id, to:foe.id };
+  markDuelStart(m);
+  setTimeout(()=>{
+    let pa = randPick(), pb = randPick(); while (pb===pa) pb = randPick();
+    const winner = PICKS[pa].beats===pb ? bot.id : foe.id;
+    applyResult({ duelId:m.duelId, a:bot.id, b:foe.id, pa, pb, winner, loser:winner===bot.id?foe.id:bot.id, team:players.get(winner).character });
+  }, 2200);
+}, 1500);
 
 function openCard(id){
   const p = players.get(id); if (!p) return;
