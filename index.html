@@ -319,7 +319,7 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
     <span class="pill" id="countPill"></span>
     <button id="myCardBtn">การ์ดของฉัน</button>
     <button id="shareBtn">คัดลอกลิงก์ห้อง</button>
-    <button id="battleBtn" hidden>⚔️ เริ่มสู้ 1:30 นาที</button>
+    <button id="battleBtn" hidden>⚔️ เริ่มสู้ 1:00 นาที</button>
     <button id="scoreBtn" hidden>คะแนนทีม</button>
     <button id="resetBtn" hidden>ล้างห้อง</button>
     <button class="sound-toggle" type="button">🔊</button>
@@ -329,7 +329,7 @@ input[type=text]{width:100%;padding:12px 14px;border:2px dashed var(--kraft-dark
     <span class="how">แตะพื้นเพื่อพาตัวเองเดิน · แตะเพื่อนเพื่อดูการ์ด</span>
     <span class="feed" id="feed"></span>
   </div>
-  <div class="hud" id="hud" hidden><span class="timer" id="timer">1:30</span><span class="tops" id="hudTops"></span><span class="rule">แตะเพื่อนต่างสายเพื่อท้าสู้ · แพ้แล้วเกิดใหม่ใน 5 วิ</span></div>
+  <div class="hud" id="hud" hidden><span class="timer" id="timer">1:00</span><span class="tops" id="hudTops"></span><span class="rule">แตะเพื่อนต่างสายเพื่อท้าสู้ · แพ้แล้วเกิดใหม่ใน 5 วิ</span></div>
   <div class="floor" id="floor"></div>
 </section>
 
@@ -828,7 +828,7 @@ const PICKS = {
   hammer:{e:"🔨",n:"ค้อน",beats:"scissors"},
   paper:{e:"📄",n:"กระดาษ",beats:"hammer"}
 };
-const BATTLE_MS = 90000, PICK_MS = 8000, RESPAWN_MS = 5000;
+const BATTLE_MS = 60000, PICK_MS = 8000, RESPAWN_MS = 4000;
 const IS_AUTH = IS_HOST || DEMO;          // ผู้จัดเป็นคนจับเวลาและเก็บคะแนนกลาง
 let battle = { active:false, ended:false, endsAt:0, scores:{}, kills:{}, dead:{}, busy:{}, seen:new Set() };
 let duel = null, lastState = 0;
@@ -874,7 +874,7 @@ function finishBattle(){
   showScoreboard(true);
 }
 $("#battleBtn").onclick = () => {
-  if (!confirm("เริ่มสู้ 1:30 นาทีเลยไหม ทุกคนในห้องจะเริ่มพร้อมกัน")) return;
+  if (!confirm("เริ่มสู้ 1:00 นาทีเลยไหม ทุกคนในห้องจะเริ่มพร้อมกัน")) return;
   beginBattle(BATTLE_MS, false);
   send("start", { duration:BATTLE_MS });
 };
